@@ -5,6 +5,7 @@ const dbConnection = require('./Config/database');
 //Routes
 const categoryRoutes = require('./routes/categoryRoutes');
 const subCategoryRoutes = require('./routes/subCategoryRoutes');
+const brandRoutes = require('./routes/brandRoutes');
 const ApiError = require('./utils/apiError');
 const errorHandler = require('./middelWare/errorHandler');
 
@@ -38,7 +39,7 @@ app.use(express.json());
 // Routes
 app.use('/api/category', categoryRoutes);
 app.use('/api/subcategory', subCategoryRoutes);
-
+app.use('/api/brand', brandRoutes);
 
 // Catch-all error for unknown routes
 app.use('*', (req, res, next) => {

@@ -8,7 +8,7 @@ exports.getAll = asyncHandler(async (req, res) => {
     const pages = req.query.pages * 1 ||1
     const limit = req.query.limit * 1 ||2
     const skip = (pages - 1) * limit
-    const subcategories = await SubCategory.find({})
+    const subcategories = await SubCategory.find({category : req.params.categoryId})
     .skip(skip)
     .limit(limit)
     .populate({

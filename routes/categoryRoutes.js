@@ -2,6 +2,11 @@ const express = require('express');
 const router = express.Router();
 const categoryService = require('../Services/categoryService');
 const categoryValidator = require('../utils/validations/categoryValidator');
+const subCategoryRoutes = require('./subCategoryRoutes');
+
+//to get all sub categories under the categoryId 
+router.use('/:categoryId/subcategory', subCategoryRoutes)
+
 // Get All Categories (specific route comes first)
 router.get('/all', categoryService.getAll);
 

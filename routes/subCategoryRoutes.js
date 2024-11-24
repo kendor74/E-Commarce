@@ -1,9 +1,10 @@
 const express = require('express');
-const router = express.Router();
+//reseving categoryId for filtering the sub categories by category
+const router = express.Router({mergeParams:true});
 const subCategoryService = require('../Services/subCategoryService');
 const subCategoryValidator = require('../utils/validations/subCategoryValidator');
 // Get All Categories (specific route comes first)
-router.get('/all', subCategoryService.getAll);
+router.get('/', subCategoryService.getAll);
 
 // Create a Category
 router.post(
