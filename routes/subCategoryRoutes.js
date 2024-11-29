@@ -3,8 +3,11 @@ const express = require('express');
 const router = express.Router({mergeParams:true});
 const subCategoryService = require('../Services/subCategoryService');
 const subCategoryValidator = require('../utils/validations/subCategoryValidator');
+
+
+
 // Get All Categories (specific route comes first)
-router.get('/', subCategoryService.getAll);
+router.get('/', subCategoryService.createFilterObject,subCategoryService.getAll);
 
 // Create a Category
 router.post(

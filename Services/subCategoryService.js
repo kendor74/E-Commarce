@@ -1,114 +1,29 @@
 const SubCategory = require('../model/subCategoryModel');
-const slugify = require('slugify');
-const asyncHandler = require('express-async-handler');
-const ApiError = require('../utils/apiError');
+const handlerFactory = require('./handlerFactory');
 
-// Get All Categories
-exports.getAll = asyncHandler(async (req, res) => {
-    const pages = req.query.pages * 1 ||1
-    const limit = req.query.limit * 1 ||2
-    const skip = (pages - 1) * limit
-    const subcategories = await SubCategory.find({category : req.params.categoryId})
-    .skip(skip)
-    .limit(limit)
-    .populate({
-        path:'category',
-        select: 'name'
-    });
-    res.status(200).json({ result :subcategories.length , subCategories: subcategories });
-});
-
-
-//
-exports.getSubCategory = asyncHandler(async (req, res, next) => {
-    const { id } = req.params;
-    const subCategory = await SubCategory.findById(id)  
-    .populate({
-        path:'category',
-        select: 'name'
-    });;
-    if (!subCategory){
-        return next(new ApiError(`Category not found for this ID ${id}`, 404));
+// Middleware to create filter object for querying SubCategories based on category
+exports.createFilterObject = (req, res, next) => {
+    let filterObject = {};
+    if (req.params.categoryId) {
+        filterObject = {
+            category: req.params.categoryId
+        };
     }
-    res.status(200).json({data: subCategory})
-})
+    req.filterObject = filterObject;
+    next();
+};
 
+// Get All SubCategories - Using the handler factory for the generic function
+exports.getAll = handlerFactory.getAllModels(SubCategory);
 
-// Create a Category
-exports.createSubCategory = asyncHandler(async (req, res, next) => {
-    const { name, category } = req.body;
+// Get a specific SubCategory by ID - Using the handler factory for the generic function
+exports.getSubCategory = handlerFactory.getModel(SubCategory);
 
-    // Validate input
-    if (!name) {
-        return next(new ApiError("Name is required", 400));
-    }
+// Create a new SubCategory - Using the handler factory for the generic function
+exports.createSubCategory = handlerFactory.create(SubCategory);
 
-    // Create category
-    const newSubCategory = await SubCategory.create({
-        name,
-        slug: slugify(name),
-        category
-    });
+// Update an existing SubCategory - Using the handler factory for the generic function
+exports.updateSubCategory = handlerFactory.update(SubCategory);
 
-    res.status(201).json({ message: "Sub Category created", subCategory: newSubCategory });
-});
-
-// Update category
-exports.updateSubCategory = asyncHandler (async (req, res, next) => {
-    const { id } = req.params;
-    const {name, category} = req.body;
-    const subCategory = await SubCategory.findOneAndUpdate(
-        {_id:id},
-        {
-            name,
-            slug: slugify(name),
-            category
-        },
-        {new: true}
-    )
-    .populate({
-        path:'category',
-        select: 'name'
-    });
-
-    if (!subCategory){
-        return next(new ApiError(`Not Found Id: ${id}`, 404));
-    }
-
-    res.status(200).json({data: subCategory});
-})
-
-
-exports.deleteSubCategory = asyncHandler (async (req, res, next) => {
-    const id = req.params.id
-    const subCategory = await SubCategory.findByIdAndDelete(id)  
-    .populate({
-        path:'category',
-        select: 'name'
-    });;
-
-    if (!subCategory){
-        return next(new ApiError(`Not Found Id: ${id}`, 404));
-    }
-
-    res.status(200).json({data: subCategory});
-
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// module.exports = {
-//     createCategory,
-//     getAll,
-// };
+// Delete a SubCategory - Using the handler factory for the generic function
+exports.deleteSubCategory = handlerFactory.delete(SubCategory);
